@@ -1,0 +1,51 @@
+struct Interval {
+    int start, end;
+    char style;
+};
+
+bool compareIntervals(const Interval& a, const Interval& b) {
+    if (a.start != b.start)
+        return a.start < b.start;
+    return a.end < b.end;
+}
+
+int textFormatting(vector<int> starting, vector<int> ending, vector<char> style) {
+    int n = starting.size();
+    vector<Interval> segments;
+
+    for (int i = 0; i < n; ++i) {
+        segments.push_back({starting[i], ending[i], style[i]});
+    }
+
+    unordered_map<char, vector<pair<int, int>>> styleGroups;
+
+    for (const auto& segment : segments) {
+        styleGroups[segment.style].emplace_back(segment.start, segment.end);
+    }
+
+    map<pair<int, int>, set<char>> rangeWithStyles;
+
+    for (auto& [sty, ranges] : styleGroups) {
+        sort(ranges.begin(), ranges.end());
+        vector<pair<int, int>> merged;
+
+        for (const auto& [l, r] : ranges) {
+            if (!merged.empty() && merged.back().second >= l - 1) {
+                merged.back().second = max(merged.back().second, r);
+            } else {
+                merged.emplace_back(l, r);
+            }
+        }
+
+        for (const auto& [l, r] : merged) {
+            rangeWithStyles[{l, r}].insert(sty);
+        }
+    }
+
+    int operations = 0;
+    for (const auto& [range, styles] : rangeWithStyles) {
+        operations += 1 + styles.size(); // 1 select + number of styles
+    }
+
+    return operations;
+}

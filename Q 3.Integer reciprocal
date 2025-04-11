@@ -1,0 +1,31 @@
+void reciprocal(int n) {
+    int ip = 1 / n;
+    int rem = 1 % n;
+
+    string dec = "";
+    unordered_map<int, int> remPos;
+    int i = 0, start = -1;
+
+    while (rem) {
+        if (remPos.count(rem)) {
+            start = remPos[rem];
+            break;
+        }
+        remPos[rem] = i;
+        rem *= 10;
+        dec += to_string(rem / n);
+        rem %= n;
+        i++;
+    }
+
+    string nonR, rep;
+    if (rem == 0) {
+        nonR = dec;
+        rep = "0";
+    } else {
+        nonR = dec.substr(0, start);
+        rep = dec.substr(start);
+    }
+
+    cout << ip << "." << nonR << rep << " " << rep << endl;
+}

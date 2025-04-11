@@ -1,0 +1,28 @@
+vector<int> getMinTime(int cache_size, int cache_time, int server_time, vector<string> urls) {
+    list<string> lru;  // Stores order of recently used URLs
+    unordered_set<string> lookup;  // Helps in quick existence check
+    vector<int> response;
+
+    for (const auto& link : urls) {
+        // Check if link is already in cache
+        if (lookup.find(link) != lookup.end()) {
+            // Move to front as it's recently used
+            lru.remove(link);
+            lru.push_front(link);
+            response.push_back(cache_time);
+        } else {
+            // Cache miss, fetch from server
+            response.push_back(server_time);
+            lru.push_front(link);
+            lookup.insert(link);
+
+            if ((int)lru.size() > cache_size) {
+                string leastUsed = lru.back();
+                lru.pop_back();
+                lookup.erase(leastUsed);
+            }
+        }
+    }
+
+    return response;
+}
